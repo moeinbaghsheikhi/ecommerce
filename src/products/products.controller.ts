@@ -3,6 +3,7 @@ import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Response } from "express";
+import { BookmarkProductDto } from "./dto/bookmark-product.dto";
 
 @Controller('products')
 export class ProductsController {
@@ -16,6 +17,17 @@ export class ProductsController {
       statusCode: HttpStatus.OK,
       data: product,
       message: " محصول با موفقیت ساخته شد"
+    })
+  }
+
+  @Post('bookmark-prodcut')
+  async bookmarkProduct(@Body() bookmarkProduct: BookmarkProductDto, @Res() res: Response){
+    const bookmarkData = await this.productsService.toggleBookmark(bookmarkProduct.user_id, bookmarkProduct.product_id);
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: bookmarkData,
+      message: " محصول با موفقیت ذخیره شد"
     })
   }
 

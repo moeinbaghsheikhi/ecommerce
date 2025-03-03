@@ -5,15 +5,19 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Product } from "./entities/product.entity";
 import { In, Repository } from "typeorm";
 import { Category } from "../categories/entities/category.entity";
+import { BookmarkProduct } from "./entities/product-bookmark.entity";
+import { UsersService } from "src/users/users.service";
 
 @Injectable()
 export class ProductsService {
   constructor(
     @InjectRepository(Product)
     private readonly productsRepository: Repository<Product>,
-
+    @InjectRepository(BookmarkProduct)
+    private readonly bookmarkProductRepository: Repository<BookmarkProduct>,
     @InjectRepository(Category)
     private readonly categoryRepository: Repository<Category>,
+    private readonly userService : UsersService
   ) {}
   async create(createProductDto: CreateProductDto):Promise<Product> {
     const { title, price, description, stock, categoryIds } = createProductDto;
@@ -55,4 +59,35 @@ export class ProductsService {
     if(!product) throw new NotFoundException("Product not found");
     return product;
   }
+
+  async toggleBookmark(userId: number, productId: number): Promise<BookmarkProduct | void> {
+    // چک کردن وجود کاربر و محصول
+    const user = await this.userService.findOne(userId);
+    const product = await this.productsRepository.findOne({ where: { id: productId } });
+
+    if (!user || !product) {
+        throw new NotFoundException('کاربر یا محصول یافت نشد');
+    }
+
+    // چک کردن وجود بوکمارک
+    const existingBookmark = await this.bookmarkProductRepository.findOne({
+      where: { 
+          user: { id: user.id }, // فقط id کاربر
+          product: { id: product.id }, // فقط id محصول
+      },
+  });
+    console.log(existingBookmark)
+
+    if (existingBookmark) {
+        // اگر بوکمارک وجود داشت، حذف می‌کنیم
+        await this.bookmarkProductRepository.remove(existingBookmark);
+    } else {
+        // اگر بوکمارک وجود نداشت، ایجاد می‌کنیم
+        const newBookmark = this.bookmarkProductRepository.create({
+            user: user,
+            product: product,
+        });
+        return await this.bookmarkProductRepository.save(newBookmark);
+    }
+}
 }
