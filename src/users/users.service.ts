@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import UserRoleEnum from './enums/userRoleEnum';
+import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class UsersService {
@@ -70,6 +71,39 @@ export class UsersService {
       throw new BadRequestException("هنگام آپدیت پروژه خطایی رخ داد!")
     }
   }
+
+  async addProductToBasket(userId, product){
+    const user = await this.userRepository.findOne({where: {id: userId}, relations: ['basket_items']});
+
+    user.basket_items.push(product);
+
+    return await this.userRepository.save(user);
+  }
+
+  async removeProductFromBasket(userId: number, product): Promise<void> {
+    // یافتن کاربر به همراه آیتم‌های سبد خرید
+    const user = await this.userRepository.findOne({ 
+        where: { id: userId }, 
+        relations: ['basket_items'] 
+    });
+
+    if (!user) {
+        throw new NotFoundException('User not found');
+    }
+
+    // پیدا کردن آیتم مورد نظر در سبد خرید
+    const productIndex = user.basket_items.findIndex(item => item.id === product.id);
+
+    if (productIndex === -1) {
+        throw new NotFoundException('Product not found in the basket');
+    }
+
+    // حذف آیتم از سبد خرید
+    user.basket_items.splice(productIndex, 1);
+
+    // ذخیره تغییرات
+    await this.userRepository.save(user);
+}
 
   async remove(id: number): Promise<void> {
     const result = await this.userRepository.delete(id)

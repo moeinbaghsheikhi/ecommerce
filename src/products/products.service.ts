@@ -89,5 +89,17 @@ export class ProductsService {
         });
         return await this.bookmarkProductRepository.save(newBookmark);
     }
-}
+  }
+
+  async addItemToBasket(userId: number, productId: number): Promise<void> {
+    const product = await this.productsRepository.findOne({ where: { id: productId } });
+
+    await this.userService.addProductToBasket(userId, product);
+  }
+
+  async removeItemFromBasket(userId: number, productId: number) {
+    const product = await this.productsRepository.findOne({ where: { id: productId } });
+
+    return await this.userService.removeProductFromBasket(userId, product);
+  }
 }

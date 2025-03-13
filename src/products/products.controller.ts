@@ -31,6 +31,27 @@ export class ProductsController {
     })
   }
 
+  @Post('add-basket')
+  async addItemToBasket(@Body() bookmarkProduct: BookmarkProductDto, @Res() res: Response){
+    const bookmarkData = await this.productsService.addItemToBasket(bookmarkProduct.user_id, bookmarkProduct.product_id);
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      data: bookmarkData,
+      message: " محصول با موفقیت به سبد خرید اضافه شد"
+    })
+  }
+
+  @Post('remove-basket')
+  async removeItemFromBasket(@Body() bookmarkProduct: BookmarkProductDto, @Res() res: Response){
+    await this.productsService.removeItemFromBasket(bookmarkProduct.user_id, bookmarkProduct.product_id);
+
+    return res.status(HttpStatus.OK).json({
+      statusCode: HttpStatus.OK,
+      message: " محصول با موفقیت از سبد حذف اضافه شد"
+    })
+  }
+
   @Get()
   async findAll(@Res() res: Response) {
     const products = await this.productsService.findAll();
