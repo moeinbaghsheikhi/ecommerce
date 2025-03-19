@@ -18,8 +18,8 @@ export class CreateOrderDto {
     @IsNumber({}, { message: 'شناسه آدرس باید یک عدد باشد' })
     addressId: number;
 
-    @IsNumber({}, { message: 'قیمت کل باید یک عدد باشد' })
-    total_price: number;
+    // @IsNumber({}, { message: 'قیمت کل باید یک عدد باشد' })
+    // total_price: number;
 
     @IsString({ message: 'کد تخفیف باید یک متن باشد' })
     @IsOptional()

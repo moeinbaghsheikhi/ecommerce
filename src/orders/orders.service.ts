@@ -12,6 +12,8 @@ import { UsersService } from 'src/users/users.service';
 import { AddressService } from 'src/address/address.service';
 import { ProductsService } from 'src/products/products.service';
 import { OrderStatus } from './enums/order-status.enum';
+import { register } from 'module';
+import { find } from 'rxjs';
 
 @Injectable()
 export class OrdersService {
@@ -26,23 +28,28 @@ export class OrdersService {
   ) {}
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
+    // get user for order
     const user = await this.userService.findOne(createOrderDto.userId);
 
+    // get address for order
     const address = await this.addressService.findOne(createOrderDto.addressId);
 
+    // create temp order
     const order = this.orderRepository.create({
       user,
       address,
-      total_price: createOrderDto.total_price,
       discount_code: createOrderDto.discount_code,
       status: createOrderDto.status || OrderStatus.PENDING,
     });
 
     const savedOrder = await this.orderRepository.save(order);
 
+    // assign items to order
+    let totalPrice = 0
     if (createOrderDto.items && createOrderDto.items.length > 0) {
       const orderItems = createOrderDto.items.map(async (item) => {
         const product = await this.productService.findOne(item.productId);
+        totalPrice += product.price
 
         const orderItem = this.orderItemRepository.create({
           order: savedOrder,
@@ -55,7 +62,12 @@ export class OrdersService {
       await Promise.all(orderItems);
     }
 
-    return savedOrder;
+    // update total price in order
+    await this.orderRepository.update({id: savedOrder.id}, {total_price: totalPrice})
+
+    const returned_order = await this.orderRepository.findOne({ where: {id: savedOrder.id}, relations: ['user', 'address', 'items', 'items.product'] })
+
+    return returned_order;
   }
 
   async findAll(): Promise<Order[]> {
@@ -85,9 +97,9 @@ export class OrdersService {
       order.status = updateOrderDto.status;
     }
 
-    if (updateOrderDto.total_price) {
-      order.total_price = updateOrderDto.total_price;
-    }
+    // if (updateOrderDto.total_price) {
+    //   order.total_price = updateOrderDto.total_price;
+    // }
 
     if (updateOrderDto.discount_code) {
       order.discount_code = updateOrderDto.discount_code;
