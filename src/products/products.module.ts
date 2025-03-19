@@ -11,5 +11,6 @@ import { BookmarkProduct } from './entities/product-bookmark.entity';
   imports: [TypeOrmModule.forFeature([Product, Category, BookmarkProduct]), UsersModule],
   controllers: [ProductsController],
   providers: [ProductsService],
+  exports: [ProductsService]
 })
 export class ProductsModule {}

@@ -41,7 +41,7 @@ export class UsersService {
     return await query.getMany();
   }
 
-  async findOne(id: number) {
+  async findOne(id: number): Promise<User> {
     const user = await this.userRepository.findOneBy({ id })
 
     if(!user) throw new NotFoundException(`کاربر ${id} پیدا نشد!`)

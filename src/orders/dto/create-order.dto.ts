@@ -1,4 +1,4 @@
-import { IsArray, IsDateString, IsEnum, IsNumber, IsOptional, ValidateNested } from "class-validator";
+import { IsArray, IsDateString, IsEnum, IsNumber, IsOptional, IsString, ValidateNested } from "class-validator";
 import { OrderStatus } from "../enums/order-status.enum";
 import { Type } from "class-transformer";
 import { CreateOrderItemDto } from "./craete-order-item.dto";
@@ -21,9 +21,9 @@ export class CreateOrderDto {
     @IsNumber({}, { message: 'قیمت کل باید یک عدد باشد' })
     total_price: number;
 
-    @IsNumber({}, { message: 'کد تخفیف باید یک عدد باشد' })
+    @IsString({ message: 'کد تخفیف باید یک متن باشد' })
     @IsOptional()
-    discount_code?: number;
+    discount_code?: string;
 
     @IsArray({ message: 'آیتم‌های سفارش باید به صورت آرایه ارسال شوند' })
     @ValidateNested({ each: true, message: 'هر آیتم سفارش باید معتبر باشد' })
