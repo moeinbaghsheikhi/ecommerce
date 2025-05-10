@@ -13,7 +13,8 @@ import { AddressService } from 'src/address/address.service';
 import { ProductsService } from 'src/products/products.service';
 import { OrderStatus } from './enums/order-status.enum';
 import { register } from 'module';
-import { find } from 'rxjs';
+import { find, lastValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class OrdersService {
@@ -25,6 +26,7 @@ export class OrdersService {
     private readonly userService: UsersService,
     private readonly addressService: AddressService,
     private readonly productService: ProductsService,
+    private readonly httpService: HttpService
   ) {}
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
@@ -120,5 +122,28 @@ export class OrdersService {
     }
 
     await this.orderRepository.remove(order);
+  }
+
+  async startPayment(order_id: number) {
+    const order = await this.findOne(order_id);
+    const request = this.httpService.post("https://gateway.zibal.ir/v1/request", { merchant: 'zibal', amount: (order.total_price * 10), callbackUrl: "https://sabzlearn.ir", orderId: 2 });
+
+    const responseBody = await lastValueFrom(request);
+
+    return responseBody.data;
+  }
+
+  async verifyPayment(trackId: number, order_id: number) {
+    const request = this.httpService.post("https://gateway.zibal.ir/v1/verify", { merchant: 'zibal', trackId: trackId });
+
+    const responseBody = await lastValueFrom(request);
+
+    if(responseBody.data.result == 100) {
+      const order = await this.findOne(order_id);
+      order.status = OrderStatus.COMPLETED;
+      await this.orderRepository.save(order);
+    }
+
+    return responseBody.data;
   }
 }
