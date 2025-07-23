@@ -4,7 +4,9 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Response } from "express";
 import { BookmarkProductDto } from "./dto/bookmark-product.dto";
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags('Products - مدیریت محصولات')
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
@@ -19,6 +21,7 @@ export class ProductsController {
       message: " محصول با موفقیت ساخته شد"
     })
   }
+
 
   @Post('bookmark-prodcut')
   async bookmarkProduct(@Body() bookmarkProduct: BookmarkProductDto, @Res() res: Response){

@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import UserRoleEnum from './enums/userRoleEnum';
 import { NotFoundError } from 'rxjs';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -16,6 +17,8 @@ export class UsersService {
   async create(createUserDto: CreateUserDto) {
     try{
       const alreadyUser = await this.findOneByMobile(createUserDto.mobile, true);
+      const hashedPassword: string = await bcrypt.hash(createUserDto.password, 10);
+      createUserDto.password = hashedPassword;
 
       if(!alreadyUser){
         const newUser = this.userRepository.create(createUserDto)

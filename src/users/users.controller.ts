@@ -4,12 +4,16 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Response } from 'express';
 import UserRoleEnum from './enums/userRoleEnum';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+
+@ApiTags('Users - مدیریت کاربران')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
-
+  
   @Post()
+  @ApiOperation({ summary: "ایجاد کاربر جدید" })
   async create(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
     const createUser = await this.usersService.create(createUserDto);
 
