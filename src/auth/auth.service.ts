@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
-import UserRoleEnum from '../users/enums/userRoleEnum';
+import Role from '../users/enums/Role';
 import * as bcrypt from 'bcrypt';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class AuthService {
       mobile,
       password: hashedPassword,
       display_name,
-      role: UserRoleEnum.NormalUser,
+      role: Role.NormalUser,
     });
   }
 
@@ -25,7 +25,7 @@ export class AuthService {
     const user = await this.usersService.findOneByMobile(mobile);
     if(!(await bcrypt.compare(password, user.password))) throw new UnauthorizedException('رمز عبور شما اشتباه است');
 
-    const payload = { mobile: user.mobile, sub: user.id, display_name: user.display_name };
+    const payload = { mobile: user.mobile, sub: user.id, display_name: user.display_name, role: user.role };
     const token = this.jwtService.sign(payload);
 
     return {

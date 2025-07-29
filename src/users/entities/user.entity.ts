@@ -1,5 +1,5 @@
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import UserRoleEnum from "../enums/userRoleEnum";
+import Role from "../enums/Role";
 import { Address } from "../../address/entities/address.entity";
 import { Ticket } from "../../tickets/entities/ticket.entity";
 import { BookmarkProduct } from "src/products/entities/product-bookmark.entity";
@@ -20,8 +20,8 @@ export class User {
     @Column({ nullable: true })
     password: string;
 
-    @Column({ type: 'enum', enum: UserRoleEnum, default: UserRoleEnum.NormalUser })
-    role: UserRoleEnum;
+    @Column({ type: 'enum', enum: Role, default: Role.NormalUser })
+    role: Role;
 
     @OneToMany(() => Address, (address) => address.user)
     addresses: Address[];
