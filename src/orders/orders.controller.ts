@@ -5,7 +5,9 @@ import { UpdateOrderDto } from './dto/update-order.dto';
 import { Response } from 'express';
 import { paymentOrderDto } from './dto/payment-order.dto';
 import { verifyPayment } from './dto/verify-payment.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth()
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}

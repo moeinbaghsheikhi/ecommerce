@@ -3,12 +3,14 @@ import { AuthService } from "./auth.service";
 import { RegisterDto } from "./dto/register.dto";
 import { LoginDto } from "./dto/login.dto";
 import { Response } from "express";
+import { Public } from "./decorators/public.decorator";
 
 
+@Public()
 @Controller("auth")
 export class AuthController {
   constructor(private authService: AuthService) {}
-
+  
   @Post('register')
   async register(@Body() registerDto: RegisterDto, @Res() res: Response){
     const register = await this.authService.register(registerDto.mobile, registerDto.password, registerDto.display_name);

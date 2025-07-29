@@ -37,16 +37,16 @@ export class IpTrackerService {
             return;
         }
         // ckeck blocked ip
-        if(record.isBlocked && record.blockUntil && nowTimeTh < record.blockUntil){
-            throw new HttpException(
-                {
-                  statusCode: HttpStatus.TOO_MANY_REQUESTS,
-                  error: 'Too Many Requests',
-                  message: `شما برای ${this.BLOCK_MINUTES} دقیقه محدود شده اید`,
-                },
-                HttpStatus.TOO_MANY_REQUESTS,
-              );
-        }
+        // if(record.isBlocked && record.blockUntil && nowTimeTh < record.blockUntil){
+        //     throw new HttpException(
+        //         {
+        //           statusCode: HttpStatus.TOO_MANY_REQUESTS,
+        //           error: 'Too Many Requests',
+        //           message: `شما برای ${this.BLOCK_MINUTES} دقیقه محدود شده اید`,
+        //         },
+        //         HttpStatus.TOO_MANY_REQUESTS,
+        //       );
+        // }
 
         // calculate windowEnd
         const windowEnd = new Date(record.windowStart.getTime() + (this.WINDOW_MINUTES * 60 * 1000));

@@ -4,8 +4,9 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { Response } from "express";
 import { BookmarkProductDto } from "./dto/bookmark-product.dto";
-import { ApiTags } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
 
+@ApiBearerAuth()
 @ApiTags('Products - مدیریت محصولات')
 @Controller('products')
 export class ProductsController {
