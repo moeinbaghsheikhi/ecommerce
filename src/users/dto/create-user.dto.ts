@@ -23,13 +23,4 @@ export class CreateUserDto {
     // @MinLength(8, { message: "رمز عبور باید حداقل 8 کاراکتر باشد" })
     @MaxLength(16, { message: "رمز عبور باید حداکثر 16 کاراکتر باشد" })
     password: string;
-
-    @ApiPropertyOptional({ 
-        enum: Role,
-        description: 'نقش کاربر',
-        example: Role.Admin
-     })
-    @IsEnum(Role, { message: "نقش کاربر باید یکی از مقادیر (admin, user) باشد" })
-    @IsOptional()
-    role: Role;
 }

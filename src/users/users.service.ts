@@ -52,6 +52,56 @@ export class UsersService {
     return user
   }
 
+   async findUserByPermission(userId: number): Promise<User> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['roles', 'roles.permissions', 'permissions']
+    });
+
+    if(!user) throw new NotFoundException(`کاربر ${userId} پیدا نشد!`)
+
+    return user
+  }
+
+  async addPermission(userId , permission){
+    const user = await this.userRepository.findOne(
+      { 
+        where: { id: userId },
+        relations: ['permissions']
+      }
+    )
+
+    user.permissions.push(permission);
+
+    return this.userRepository.save(user);
+  }
+
+  async addRole(userId , role){
+    const user = await this.userRepository.findOne(
+      { 
+        where: { id: userId },
+        relations: ['roles']
+      }
+    )
+
+    user.roles.push(role);
+
+    return this.userRepository.save(user);
+  }
+
+   async removeRole(userId: number, roleId: number){
+    const user = await this.userRepository.findOne(
+      { 
+        where: { id: userId },
+        relations: ['roles']
+      }
+    )
+
+    user.roles = user.roles.filter(r => r.id != roleId);
+
+    return this.userRepository.save(user);
+  }
+
   async findOneByMobile(mobile: string, checkExist: boolean = false) {
     const user = await this.userRepository.findOneBy({ mobile })
 

@@ -6,6 +6,7 @@ import { Response } from 'express';
 import Role from './enums/Role';
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { Roles } from 'src/auth/decorators/roles.decorator';
+import { Permissions } from 'src/auth/decorators/permissions.decorator';
 
 @Roles(Role.Admin, Role.Moderator)
 @ApiBearerAuth()
@@ -14,6 +15,7 @@ import { Roles } from 'src/auth/decorators/roles.decorator';
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
   
+  // @Permissions('create.user')
   @Post()
   @ApiOperation({ summary: "ایجاد کاربر جدید" })
   async create(@Body() createUserDto: CreateUserDto, @Res() res: Response) {
@@ -39,6 +41,7 @@ export class UsersController {
     required: false
   })
   @Get()
+  @Permissions('read.user')
   async findAll(
     @Res() res: Response,
     @Query('role') role?: Role,
@@ -54,6 +57,7 @@ export class UsersController {
     })
   }
 
+  @Permissions('read.user')
   @Get(':id')
   async findOne(@Param('id') id: string, @Res() res: Response) {
     const user = await this.usersService.findOne(+id);

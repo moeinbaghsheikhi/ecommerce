@@ -1,10 +1,12 @@
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import Role from "../enums/Role";
 import { Address } from "../../address/entities/address.entity";
 import { Ticket } from "../../tickets/entities/ticket.entity";
 import { BookmarkProduct } from "src/products/entities/product-bookmark.entity";
 import { Product } from "src/products/entities/product.entity";
 import { Order } from "src/orders/entities/order.entity";
+import { Role } from "src/auth/entities/role.entity";
+import { Permission } from "src/auth/entities/permission.entity";
+import RoleEnum from "../enums/Role";
 
 @Entity({ name: "users" })
 export class User {
@@ -20,8 +22,8 @@ export class User {
     @Column({ nullable: true })
     password: string;
 
-    @Column({ type: 'enum', enum: Role, default: Role.NormalUser })
-    role: Role;
+    @Column({ type: 'enum', enum: RoleEnum, default: RoleEnum.NormalUser })
+    role: RoleEnum;
 
     @OneToMany(() => Address, (address) => address.user)
     addresses: Address[];
@@ -48,4 +50,13 @@ export class User {
 
     @UpdateDateColumn()
     updated_at: Date; 
+
+
+    @ManyToMany(() => Role)
+    @JoinTable({ name: 'user_roles' })
+    roles: Role[];
+
+    @ManyToMany(() => Permission)
+    @JoinTable({ name: 'user_permissions' })
+    permissions: Permission[];
 }
