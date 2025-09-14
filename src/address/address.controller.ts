@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, HttpStatus, Put } from "@nestjs/common";
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, HttpStatus, Put, UseInterceptors } from "@nestjs/common";
 import { AddressService } from './address.service';
 import { CreateAddressDto } from './dto/create-address.dto';
 import { UpdateAddressDto } from './dto/update-address.dto';
@@ -7,6 +7,7 @@ import { ApiBearerAuth } from "@nestjs/swagger";
 import { Roles } from "src/auth/decorators/roles.decorator";
 import Role from "src/users/enums/Role";
 import { Permissions } from "src/auth/decorators/permissions.decorator";
+import { LoggingInterceptor } from "src/interceptors/logging.interceptor";
 
 @Roles(Role.NormalUser)
 @ApiBearerAuth()
@@ -26,25 +27,17 @@ export class AddressController {
   }
 
   @Get()
-  async findAll(@Res() res: Response) {
+  async findAll() {
     const addresses = await this.addressService.findAll();
 
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      data: addresses,
-      message: "لیست آدرس ها با موفقیت دریافت شد"
-    })
+    return addresses
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string, @Res() res: Response) {
+  async findOne(@Param('id') id: string) {
     const address = await this.addressService.findOne(+id);
 
-    return res.status(HttpStatus.OK).json({
-      statusCode: HttpStatus.OK,
-      data: address,
-      message: "آدرس با موفقیت دریافت شد"
-    })
+    return address
   }
 
   @Put(':id')

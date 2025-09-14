@@ -18,6 +18,8 @@ import { APP_GUARD } from '@nestjs/core';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './auth/guards/roles.guard';
 import { SeederModule } from './seeder/seeder.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -25,6 +27,9 @@ import { SeederModule } from './seeder/seeder.module';
     ConfigModule.forRoot({
       isGlobal: true
     }), 
+
+    // Task scheduling
+    ScheduleModule.forRoot(),
 
     // DB Connection
     TypeOrmModule.forRoot({
@@ -40,7 +45,7 @@ import { SeederModule } from './seeder/seeder.module';
     IpTrackerModule,
     
     // Modules
-    UsersModule, AuthModule, AddressModule, TicketsModule, ProductsModule, CategoriesModule, OrdersModule, IpTrackerModule, SeederModule
+    UsersModule, AuthModule, AddressModule, TicketsModule, ProductsModule, CategoriesModule, OrdersModule, IpTrackerModule, SeederModule, TasksModule
   ],
   controllers: [AppController],
   providers: [AppService,
