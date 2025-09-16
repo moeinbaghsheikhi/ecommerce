@@ -20,6 +20,8 @@ import { RolesGuard } from './auth/guards/roles.guard';
 import { SeederModule } from './seeder/seeder.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './tasks/tasks.module';
+import { BullModule } from '@nestjs/bull';
+import { SmsModule } from './sms/sms.module';
 
 @Module({
   imports: [
@@ -43,9 +45,17 @@ import { TasksModule } from './tasks/tasks.module';
       synchronize: true
     }), 
     IpTrackerModule,
-    
+
+    // Bull
+    BullModule.forRoot({
+      redis: {
+        host: 'localhost',
+        port: 6379
+      }
+    }),
+
     // Modules
-    UsersModule, AuthModule, AddressModule, TicketsModule, ProductsModule, CategoriesModule, OrdersModule, IpTrackerModule, SeederModule, TasksModule
+    UsersModule, AuthModule, AddressModule, TicketsModule, ProductsModule, CategoriesModule, OrdersModule, IpTrackerModule, SeederModule, TasksModule, SmsModule
   ],
   controllers: [AppController],
   providers: [AppService,

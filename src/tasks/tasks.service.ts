@@ -8,7 +8,7 @@ export class TasksService {
         private readonly cleanUp: CleanupJob
     ){}
 
-    @Cron(CronExpression.EVERY_5_MINUTES)
+    @Cron(CronExpression.EVERY_12_HOURS)
     cleanOtpData(){
         this.cleanUp.cleanOtp()
     }
