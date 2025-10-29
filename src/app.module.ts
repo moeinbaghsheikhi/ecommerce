@@ -22,6 +22,11 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { TasksModule } from './tasks/tasks.module';
 import { BullModule } from '@nestjs/bull';
 import { SmsModule } from './sms/sms.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { WeathersModule } from './weathers/weathers.module';
+import { CacheModule } from '@nestjs/cache-manager';
+import { redisStore } from 'cache-manager-ioredis-yet';
+import { RedisModule } from './redis/redis.module';
 
 @Module({
   imports: [
@@ -29,6 +34,17 @@ import { SmsModule } from './sms/sms.module';
     ConfigModule.forRoot({
       isGlobal: true
     }), 
+
+    // Redis Connection
+    CacheModule.register({
+      isGlobal: true,
+      host: 'localhost',
+      port: 6379,
+      ttl: 3600
+    }), 
+
+    // Event Handler
+    EventEmitterModule.forRoot(),
 
     // Task scheduling
     ScheduleModule.forRoot(),
@@ -55,7 +71,7 @@ import { SmsModule } from './sms/sms.module';
     }),
 
     // Modules
-    UsersModule, AuthModule, AddressModule, TicketsModule, ProductsModule, CategoriesModule, OrdersModule, IpTrackerModule, SeederModule, TasksModule, SmsModule
+    UsersModule, AuthModule, AddressModule, TicketsModule, ProductsModule, CategoriesModule, OrdersModule, IpTrackerModule, SeederModule, TasksModule, SmsModule, WeathersModule, RedisModule
   ],
   controllers: [AppController],
   providers: [AppService,

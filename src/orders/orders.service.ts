@@ -15,6 +15,7 @@ import { OrderStatus } from './enums/order-status.enum';
 import { register } from 'module';
 import { find, lastValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class OrdersService {
@@ -26,7 +27,8 @@ export class OrdersService {
     private readonly userService: UsersService,
     private readonly addressService: AddressService,
     private readonly productService: ProductsService,
-    private readonly httpService: HttpService
+    private readonly httpService: HttpService,
+    private eventEmitter: EventEmitter2
   ) {}
 
   async create(createOrderDto: CreateOrderDto): Promise<Order> {
@@ -69,6 +71,17 @@ export class OrdersService {
 
     const returned_order = await this.orderRepository.findOne({ where: {id: savedOrder.id}, relations: ['user', 'address', 'items', 'items.product'] })
 
+    // create factor
+    this.eventEmitter.emit('factor.create', returned_order)
+
+    // ............
+
+    // send sms
+    this.eventEmitter.emit('sms.send', {
+      message: `سلام! سفارش شماره ${returned_order.id} با موفقیت ثبت شد✅`,
+      mobile: '09135882813'
+    })
+    
     return returned_order;
   }
 

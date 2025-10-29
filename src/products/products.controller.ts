@@ -5,12 +5,17 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { Response } from "express";
 import { BookmarkProductDto } from "./dto/bookmark-product.dto";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { Public } from "src/auth/decorators/public.decorator";
+import { RedisService } from "src/redis/redis.service";
 
 @ApiBearerAuth()
 @ApiTags('Products - مدیریت محصولات')
 @Controller('products')
 export class ProductsController {
-  constructor(private readonly productsService: ProductsService) {}
+  constructor(
+    private readonly productsService: ProductsService,
+    private redisSrvice : RedisService
+  ) {}
 
   @Post()
   async create(@Body() createProductDto: CreateProductDto, @Res() res: Response) {
@@ -56,15 +61,32 @@ export class ProductsController {
     })
   }
 
+  @Public()
   @Get()
   async findAll(@Res() res: Response) {
-    const products = await this.productsService.findAll();
+    const CacheProducts= await this.redisSrvice.get('getlist:products')
+    let products = []
+    if(CacheProducts) {
+      products = JSON.parse(CacheProducts)
+      console.log("Get products from redis cache")
+    }
+    else {
+      products = await this.productsService.findAll();
+      await this.redisSrvice.set('getlist:products', JSON.stringify(products), 1800)
+      console.log("Get products from database...")
+    }
 
     return res.status(HttpStatus.OK).json({
       statusCode: HttpStatus.OK,
       data: products,
       message: "لیست محصولات با موفقیت دریافت شد"
     })
+  }
+
+  @Public()
+  @Get('reset-cache')
+  async resetCache(){
+    await this.redisSrvice.del('getlist:products')
   }
 
   @Get(':id')
