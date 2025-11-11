@@ -4,6 +4,9 @@
 /build
 /package-lock.json
 
+# custom
+src/app.service.spec.ts
+
 # Logs
 logs
 *.log
